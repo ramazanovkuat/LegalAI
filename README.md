@@ -1,0 +1,2 @@
+# LegalAI
+LegalAI RAG
