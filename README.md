@@ -1,11 +1,12 @@
-This report details the development of a Retrieval Augmented Generation (RAG) model to enhance the accessibility and comprehension of civil law documents in the Russian Federation. 
-By leveraging cutting-edge NLP techniques, the project aims to make legal information more accessible and understandable, promoting transparency and informed citizenship.
+# Legal AI - сервис юридической помощи
 
-MOTIVATION:
-The complexity of Russian civil law documents significantly impedes the ability of non-experts to access and understand crucial legal information. This barrier not only undermines transparency and justice but also impacts informed citizenship. Developing a Retrieval-Augmented Generation (RAG) model specifically tailored to Russian legal documents can bridge this gap. By simplifying the legal research process, the RAG model aims to make legal knowledge more accessible not only to the general public but also to legal professionals and businesses, thereby enhancing societal legal empowerment.
+## Обоснование проекта
 
-DATA PREPROCESS:
-The data was carefully parsed, structured, and annotated to train the RAG model effectively, ensuring the model's output is both accurate and legally sound. For our dataset we used different normative legal act of the Russian:
+Сложность российских гражданско-правовых документов существенно ограничивает возможности неспециалистов в получении доступа к важной правовой информации и ее понимании. Этот барьер не только подрывает прозрачность и правосудие, но и влияет на осознанную гражданскую позицию. Разработка модели генерации данных с расширенным поиском (RAG), специально адаптированной к российским правовым документам, может восполнить этот пробел. Упрощая процесс юридических исследований, модель RAG направлена на то, чтобы сделать юридические знания более доступными не только для широкой общественности, но и для юристов-профессионалов и бизнеса, тем самым расширяя правовые возможности общества.
+
+## Предварительная обработка данных
+
+Для эффективного обучения модели RAG данные были тщательно проанализированы, структурированы и снабжены комментариями, гарантируя, что выходные данные модели будут точными и юридически обоснованными. Были ипользованы следующие нормативно-правовые акты Российской Федерации:
 
 - Гражданский кодекс;
 - Гражданский Процессуальный кодекс;
@@ -13,14 +14,14 @@ The data was carefully parsed, structured, and annotated to train the RAG model 
 - Налоговый кодекс;
 - Земельный кодекс;
 - Трудовой кодекс;
-- ФЗ
+- Ряд федеральных законов. 
 
-The preprocessed dataset was parsed and split on articles and it's metadata (the name of the article, section, subsection, etc) by the hierarchy of the document. Splitting the data was performed with 100 size chunks with 30 elements overlapping and collected text of the article and metadata for the unit massive for each one. Using RuBert model the embedding was done and with the FAISS (Facebook AI Similarity Search) five the most close vectores are chosen for fine-tuning. The example of the query and the correlated articles based on the FAISS:
+Предварительно обработанный набор данных был проанализирован и разделен на статьи и их метаданные (название статьи, раздела, подраздела и т.д.) в соответствии с иерархией документа. Разбиение данных было выполнено на блоки размером 100 токенов с перекрытием 30 элементов, и для каждого из них был собран текст статьи и метаданные. Векторизация произведена моделью RuBert, и с помощью FAISS (Facebook AI Similarity Search) были выбраны пять наиболее близких векторов для точной настройки. Пример запроса и коррелирующих статей на основе FAISS:
 
-Question: Может ли Частное учреждение осуществлять приносящую доходы деятельность?
+**Вопрос: Может ли частное представительство принимать участие в деятельности компании?**
 
-Query: Гражданский кодекс Статья 303, Гражданский кодекс Статья 228, Налоговый кодекс Статья 275.1, Гражданский кодекс Статья 635, ФЗ ООО Статья 15
+**Выделенные документы: Гражданский кодекс Статья 303, Гражданский кодекс Статья 228, Налоговый кодекс Статья 275.1, Гражданский кодекс Статья 635, ФЗ ООО Статья 15.**
 
-MODEL ARCHITECTURE:
-The RAG model integrates a retrieval mechanism with a generative NLP model to provide accurate and contextually appropriate legal information. More classical approaches propose to use an End2End architecture that updates both generator and retriever training. Due to some computational limitations, we used a somewhat simpler architecture where the whole retriever is frozen. More precisely, in our project we compared two tuning pipelines: with and without additional information retrieval.
-We compared two fine-tuning pipelines: with and without additional information retrieval. In the first setup (without retrieval), we simply fine-tune the phi-3b model on a question-answering dataset. In the second setup, we augment the training question-answer pairs with a top-5 retrieved document from our FAISS index.
+## Архитектура модели
+Модель RAG объединяет механизм поиска с генеративной моделью NLP для предоставления точной и соответствующей контексту правовой информации. Более классические подходы предполагают использование архитектуры End2End, которая обновляет как генераторную, так и поисковую подготовку. Из-за некоторых вычислительных ограничений мы использовали несколько более простую архитектуру, в которой весь поисковый модуль заморожен. Точнее, в нашем проекте мы сравнили два конвейера настройки: с дополнительным поиском информации и без него.
+Мы сравнили два конвейера тонкой настройки: с извлечением дополнительной информации и без него. В первой настройке (без извлечения) мы настраивали модель phi-3b на основе набора данных с ответами на вопросы. Во втором случае мы дополняем обучающие пары "вопрос-ответ" 5-ю найденными документами из нашего индекса FAISS. 
