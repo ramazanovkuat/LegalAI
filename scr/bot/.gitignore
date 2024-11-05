@@ -1,0 +1,7 @@
+.env
+.mypy_cache/
+.vscode/
+__pycache__/
+legal_venv
+services
+data
